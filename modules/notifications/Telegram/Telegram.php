@@ -36,6 +36,12 @@ class Telegram implements NotificationModuleInterface
                 'Description' => 'ChatID of the user/channel.',
                 'Placeholder' => ' ',
             ],
+            'TopicGroup' => [
+                'FriendlyName' => 'TopicID',
+                'Type' => 'text',
+                'Description' => 'Topic of the Group.',
+                'Placeholder' => ' ',
+            ],
         ];
     }
 
@@ -44,12 +50,13 @@ class Telegram implements NotificationModuleInterface
     {
 		$botToken = $settings['botToken'];
 		$botChatID = $settings['botChatID'];
-		
+		$TopicGroup = $settings['TopicGroup'];
+
 		$message = urlencode("Connected with WHMCS");
-		$response = file_get_contents("https://api.telegram.org/bot".$botToken."/sendMessage?chat_id=".$botChatID."&text=".$message);
+		$response = file_get_contents("https://api.telegram.org/bot".$botToken."/sendMessage?chat_id=".$botChatID."&message_thread_id=".$TopicGroup."&text=".$message."");
 
         if (!$response) { 
-			throw new Exception('No response received from API');
+			throw new Exception("We Have Problem Bruh");
 		}
     }
 
@@ -66,16 +73,17 @@ class Telegram implements NotificationModuleInterface
 
 	public function sendNotification(NotificationInterface $notification, $moduleSettings, $notificationSettings)
     {
-        $botToken = $moduleSettings['botToken'];
+        	$botToken = $moduleSettings['botToken'];
 		$botChatID = $moduleSettings['botChatID'];
-		
-		$messageContent = "*". $notification->getTitle() ."*\n\n". $notification->getMessage() ."\n\n[Open »](". $notification->getUrl() .")";
+		$TopicGroup = $moduleSettings['TopicGroup'];
+
+		$messageContent = "— #*". $notification->getTitle() ."*\n\n". $notification->getMessage() ."\n\n[Open »](". $notification->getUrl() .")";
 		
 		$message = urlencode($messageContent);
-		$response = file_get_contents("https://api.telegram.org/bot".$botToken."/sendMessage?parse_mode=Markdown&chat_id=".$botChatID."&text=".$message);
-		
+		$response = file_get_contents("https://api.telegram.org/bot".$botToken."/sendMessage?parse_mode=Markdown&chat_id=".$botChatID."&message_thread_id=".$TopicGroup."&text=".$message);
+
         if (!$response) { 
-			throw new Exception('No response received from API');
+			throw new Exception("We Have Problem Bruh");
 		}
     }
 }
